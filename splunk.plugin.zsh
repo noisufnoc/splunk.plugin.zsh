@@ -20,23 +20,25 @@ if [[ ! $DISABLE_SPLUNK_CD -eq 1 ]]; then
       # suppress error messages somehow, this is noisy
       # just check for existance of file, not ls -1
       # how is that done in zsh?
-      SPLUNK_ROOT=`ls -1 splunk-*-manifest > /dev/null`
-      if (( $? != 0 )); then
-      #if [[ -f "./splunk-*-manifest" ]]; then
-        #SPLUNK_ROOT="."
-        print "foo"
+      # SPLUNK_ROOT=`ls -1 splunk-*-manifest > /dev/null`
+      # if (( $? != 0 )); then
+      if [[ -f "./splunk-6.2.2-255606-macosx-10.7-intel-manifest" ]]; then
+	SPLUNK_ROOT="$(pwd)"
+        echo "this is a splunk directory!"
       fi
       # Check for virtualenv name override
-      if [[ -f "$SPLUNK_ROOT/.venv" ]]; then
-        ENV_NAME=`cat "$SPLUNK_ROOT/.venv"`
-      elif [[ -f "$SPLUNK_ROOT/.venv/bin/activate" ]];then
-        ENV_NAME="$SPLUNK_ROOT/.venv"
-      elif [[ "$SPLUNK_ROOT" != "." ]]; then
-        ENV_NAME=`basename "$SPLUNK_ROOT"`
-      else
-        ENV_NAME=""
-      fi
+      #if [[ -f "$SPLUNK_ROOT/.venv" ]]; then
+      #  ENV_NAME=`cat "$SPLUNK_ROOT/.venv"`
+      #elif [[ -f "$SPLUNK_ROOT/.venv/bin/activate" ]];then
+      #  ENV_NAME="$SPLUNK_ROOT/.venv"
+      #elif [[ "$SPLUNK_ROOT" != "." ]]; then
+      #  ENV_NAME=`basename "$SPLUNK_ROOT"`
+      #else
+      #  ENV_NAME=""
+      #fi
+
       if [[ "$ENV_NAME" != "" ]]; then
+	break
         # Activate the environment only if it is not already active
         if [[ "$VIRTUAL_ENV" != "$WORKON_HOME/$ENV_NAME" ]]; then
           if [[ -e "$WORKON_HOME/$ENV_NAME/bin/activate" ]]; then
