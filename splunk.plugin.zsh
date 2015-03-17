@@ -43,6 +43,7 @@ if [[ ! $DISABLE_SPLUNK_CD -eq 1 ]]; then
 
       if [[ "$ENV_NAME" != "" ]]; then
 	# we have found splunk, set up the working env
+	export OLD_PATH=$PATH
 	export SPLUNK_HOME=$SPLUNK_ROOT
 	export PATH=$PATH:$SPLUNK_ROOT/bin
 	export CD_SPLUNK_ENV=$ENV_NAME
@@ -61,10 +62,10 @@ if [[ ! $DISABLE_SPLUNK_CD -eq 1 ]]; then
         # We've just left the repo, deactivate the environment
         # Note: this only happens if the virtualenv was activated automatically
         unset CD_SPLUNK_ENV
-      fi
       #unset SPLUNK_ROOT
       #unset SPLUNK_CWD
       #unset SPLUNK_HOME
+      fi
     fi
   }
 
