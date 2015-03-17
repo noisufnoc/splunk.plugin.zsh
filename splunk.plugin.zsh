@@ -10,9 +10,10 @@
 #
 
 if [[ ! $DISABLE_SPLUNK_CD -eq 1 ]]; then
-  # Automatically activate Git projects's virtual environments based on the
-  # directory name of the project. Virtual environment name can be overridden
-  # by placing a .venv file in the project root with a virtualenv name in it
+  function splunk_prompt() {
+      #do something
+  }
+
   function splunk_cwd {
     if [ ! $SPLUNK_CWD ]; then
       SPLUNK_CWD=1
@@ -23,9 +24,12 @@ if [[ ! $DISABLE_SPLUNK_CD -eq 1 ]]; then
       # SPLUNK_ROOT=`ls -1 splunk-*-manifest > /dev/null`
       # if (( $? != 0 )); then
       if [[ -f "./splunk-6.2.2-255606-macosx-10.7-intel-manifest" ]]; then
-	SPLUNK_ROOT="$(pwd)"
-        echo "this is a splunk directory!"
+	export SPLUNK_ROOT="$(pwd)"
+        export ENV_NAME=`basename "$SPLUNK_ROOT"`
+        echo $SPLUNK_ROOT
+	echo $ENV_NAME
       fi
+      # borrow 
       # Check for virtualenv name override
       #if [[ -f "$SPLUNK_ROOT/.venv" ]]; then
       #  ENV_NAME=`cat "$SPLUNK_ROOT/.venv"`
@@ -38,22 +42,29 @@ if [[ ! $DISABLE_SPLUNK_CD -eq 1 ]]; then
       #fi
 
       if [[ "$ENV_NAME" != "" ]]; then
-	break
-        # Activate the environment only if it is not already active
-        if [[ "$VIRTUAL_ENV" != "$WORKON_HOME/$ENV_NAME" ]]; then
-          if [[ -e "$WORKON_HOME/$ENV_NAME/bin/activate" ]]; then
-            workon "$ENV_NAME" && export CD_VIRTUAL_ENV="$ENV_NAME"
-          elif [[ -e "$ENV_NAME/bin/activate" ]]; then
-            source $ENV_NAME/bin/activate && export CD_VIRTUAL_ENV="$ENV_NAME"
-          fi
-        fi
-      elif [[ -n $CD_VIRTUAL_ENV && -n $VIRTUAL_ENV ]]; then
+	# we have found splunk, set up the working env
+	export SPLUNK_HOME=$SPLUNK_ROOT
+	export PATH=$PATH:$SPLUNK_ROOT/bin
+	export CD_SPLUNK_ENV=$ENV_NAME
+
+	# unset these things on exit
+	
+#        if [[ "$VIRTUAL_ENV" != "$WORKON_HOME/$ENV_NAME" ]]; then
+#          if [[ -e "$WORKON_HOME/$ENV_NAME/bin/activate" ]]; then
+#            workon "$ENV_NAME" && export CD_VIRTUAL_ENV="$ENV_NAME"
+#          elif [[ -e "$ENV_NAME/bin/activate" ]]; then
+#            source $ENV_NAME/bin/activate && export CD_VIRTUAL_ENV="$ENV_NAME"
+#          fi
+#        fi
+      #elif [[ -n $CD_SPLUNK_ENV && -n $VIRTUAL_ENV ]]; then
+      elif [[ -n $CD_SPLUNK_ENV ]]; then
         # We've just left the repo, deactivate the environment
         # Note: this only happens if the virtualenv was activated automatically
-        deactivate && unset CD_VIRTUAL_ENV
+        unset CD_SPLUNK_ENV
       fi
-      unset SPLUNK_ROOT
-      unset SPLUNK_CWD
+      #unset SPLUNK_ROOT
+      #unset SPLUNK_CWD
+      #unset SPLUNK_HOME
     fi
   }
 
