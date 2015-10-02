@@ -1,0 +1,1 @@
+# splunk.plugin.zsh
